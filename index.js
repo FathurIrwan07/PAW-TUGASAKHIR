@@ -57,7 +57,6 @@ app.get("/team", (req, res) => {
   res.render("team");
 });
 
-
 // Configurasi static folder untuk public assets
 app.use("/public", express.static(path.join(__dirname, "public")));
 
@@ -70,7 +69,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/contact", contactRoutes);
 app.use("/todos", todosRoutes);
-app.use("/tiket", tiketRoutes)
+app.use("/tiket", tiketRoutes);
 app.use("/", appRoutes);
 
 const verifyUser = require("./src/configs/verify");
@@ -80,11 +79,14 @@ app.use("/admin", verifyUser.isLogin, adminRoutes);
 // User routes
 app.use("/user", verifyUser.isLogin, userRoutes);
 
-
 // Middleware untuk penanganan error
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something broke!");
+});
+
+app.get("/upcoming", (req, res) => {
+  res.render("upcoming");
 });
 
 // Gunakan port server
