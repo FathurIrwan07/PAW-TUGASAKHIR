@@ -77,7 +77,7 @@ module.exports = {
       const [results] = await pool.execute("SELECT * FROM todos WHERE id = ?", [
         id,
       ]);
-      res.render("edit-todos", { todos: results[0] });
+      res.render("/todos", { todos: results[0] });
     } catch (err) {
       console.error("Error saat mengambil data untuk edit:", err);
       res.send("Gagal mengambil data Todos");

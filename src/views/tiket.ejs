@@ -167,21 +167,20 @@
 <!-- Button Container -->
 <div class="button-container">
   <button type="submit" class="order-button">Pesan Tiket</button> <br> <br>
-  <button id="viewTicketsButton" class="view-button">Lihat Tiket yang Dipesan</button> 
-</div>
-      </form>
-
-      <!-- Tambahan: Tombol dan Tabel untuk Melihat Tiket -->
-<!--   <div class="mt-5">
-        <button
+  <button
           id="viewTicketsButton"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
         >
           Lihat Tiket yang Dipesan
         </button>
-      </div>
+  <!--<button id="viewTicketsButton" class="view-button">Lihat Tiket yang Dipesan</button> -->
+</div> 
+      </form>
 
-      -->   
+      <!-- Tambahan: Tombol dan Tabel untuk Melihat Tiket -->
+      
+
+       
 
       <div
         id="ticketsList"
@@ -261,12 +260,15 @@
         // Tambahkan film lain jika diperlukan
       };
 
+      
       window.onload = function () {
         const selectedMovie = localStorage.getItem("selectedMovie");
         if (selectedMovie && movieData[selectedMovie]) {
           document.getElementById("film").value = selectedMovie;
-          document.getElementById("movieImage").src = movieData[selectedMovie].image;
-          document.getElementById("movieTitle").innerText = movieData[selectedMovie].title;
+          document.getElementById("movieImage").src =
+            movieData[selectedMovie].image;
+          document.getElementById("movieTitle").innerText =
+            movieData[selectedMovie].title;
         }
       };
 
@@ -274,105 +276,104 @@
         seat.classList.toggle("selected");
       }
 
-      async function fetchTickets() {
-        try {
-          const response = await fetch("/tiket/get");
-          if (response.ok) {
-            const tickets = await response.json();
-            updateTicketsTable(tickets);
-          } else {
-            alert("Gagal mengambil data tiket");
-          }
-        } catch (error) {
-          console.error("Error fetching tickets:", error);
-        }
-      }
-
-      function updateTicketsTable(tickets) {
-        const ticketsTableBody = document.getElementById("ticketsTableBody");
-        ticketsTableBody.innerHTML = "";
-        if (tickets.length === 0) {
-          ticketsTableBody.innerHTML = "<tr><td colspan='6' class='text-center'>Tidak ada tiket yang dipesan.</td></tr>";
-        } else {
-          tickets.forEach(ticket => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td class="border border-gray-600 p-2">${ticket.ticket_code}</td>
-              <td class="border border-gray-600 p-2">${ticket.film}</td>
-              <td class="border border-gray-600 p-2">${ticket.schedule}</td>
-              <td class="border border-gray-600 p-2">${ticket.seats}</td>
-              <td class="border border-gray-600 p-2">${ticket.payment}</td>
-              <td class="border border-gray-600 p-2">
-                <button onclick="cancelTicket(${ticket.id})" class="text-red-500">Batal</button>
-              </td>
-            `;
-            ticketsTableBody.appendChild(row);
-          });
-        }
-      }
-
-      async function cancelTicket(ticketId) {
-        try {
-          const response = await fetch(`/tiket/${ticketId}`, {
-            method: 'DELETE',
-          });
-          if (response.ok) {
-            alert("Tiket berhasil dibatalkan!");
-            fetchTickets();
-          } else {
-            alert("Gagal membatalkan tiket");
-          }
-        } catch (error) {
-          console.error("Error canceling ticket:", error);
-          alert("Terjadi kesalahan saat membatalkan tiket");
-        }
-      }
-
       const form = document.getElementById("ticketForm");
-      form.addEventListener("submit", async function (e) {
+      const ticketCodeDiv = document.getElementById("ticketCode");
+      const codeElement = document.getElementById("code");
+
+      form.addEventListener("submit", function (e) {
         e.preventDefault();
-        const film = document.getElementById("film").value;
-        const schedule = document.getElementById("schedule").value;
-        const selectedSeats = Array.from(document.querySelectorAll(".seat-button.selected")).map(seat => seat.innerText);
-        const payment = document.getElementById("payment").value;
-
-        if (!film || !schedule || selectedSeats.length === 0 || !payment) {
-          alert("Harap lengkapi semua data sebelum memesan!");
-          return;
-        }
-
         const randomCode = "TK-" + Math.floor(Math.random() * 100000);
-
-        try {
-          const response = await fetch("/tiket/save", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ticket_code: randomCode,
-              film: film,
-              schedule: schedule,
-              seats: selectedSeats.join(", "),
-              payment: payment,
-            }),
-          });
-
-          if (response.ok) {
-            alert("Tiket berhasil disimpan!");
-            document.getElementById("viewTicketsButton").click(); // Refresh daftar tiket
-          } else {
-            alert("Gagal menyimpan tiket");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          alert("Terjadi kesalahan saat menyimpan tiket");
-        }
+        codeElement.innerText = randomCode;
+        ticketCodeDiv.classList.remove("hidden");
       });
 
+      //
+      form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  const film = document.getElementById("film").value;
+  const schedule = document.getElementById("schedule").value;
+  const selectedSeats = Array.from(
+    document.querySelectorAll(".seat-button.selected")
+  ).map((seat) => seat.innerText);
+  const payment = document.getElementById("payment").value;
+
+  if (!film || !schedule || selectedSeats.length === 0 || !payment) {
+    alert("Harap lengkapi semua data sebelum memesan!");
+    return;
+  }
+
+  // Konfirmasi pemesanan
+  const confirmation = confirm(
+    `Anda akan memesan tiket dengan detail berikut:\n\n` +
+    `Film: ${film}\n` +
+    `Jadwal: ${schedule}\n` +
+    `Kursi: ${selectedSeats.join(", ")}\n` +
+    `Metode Pembayaran: ${payment}\n\n` +
+    `Apakah Anda yakin ingin memesan?`
+  );
+
+  if (!confirmation) {
+    alert("Pemesanan dibatalkan.");
+    return;
+  }
+
+  const randomCode = "TK-" + Math.floor(Math.random() * 100000);
+  const ticket = {
+    code: randomCode,
+    film,
+    schedule,
+    seats: selectedSeats.join(", "),
+    payment,
+  };
+
+  const tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+  tickets.push(ticket);
+  localStorage.setItem("tickets", JSON.stringify(tickets));
+
+  codeElement.innerText = `Kode Tiket: ${randomCode}`;
+  ticketCodeDiv.classList.remove("hidden");
+
+  alert("Tiket berhasil dipesan!");
+});
       document.getElementById("viewTicketsButton").addEventListener("click", function () {
-        fetchTickets(); // Panggil fungsi untuk mengambil tiket dari server
-      });
+  const ticketsList = document.getElementById("ticketsList");
+  const ticketsTableBody = document.getElementById("ticketsTableBody");
+
+  ticketsTableBody.innerHTML = ""; // Kosongkan tabel
+  const tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+  if (tickets.length === 0) {
+    ticketsTableBody.innerHTML = `<tr><td colspan="6" class="text-center p-2">Tidak ada tiket yang dipesan.</td></tr>`;
+  } else {
+    tickets.forEach((ticket, index) => {
+      const row = `
+      <tr>
+        <td class="border border-gray-600 p-2">${ticket.code}</td>
+        <td class="border border-gray-600 p-2">${ticket.film}</td>
+        <td class="border border-gray-600 p-2">${ticket.schedule}</td>
+        <td class="border border-gray-600 p-2">${ticket.seats}</td>
+        <td class="border border-gray-600 p-2">${ticket.payment}</td>
+        <td class="border border-gray-600 p-2">
+          <button class="bg-red-500 text-blue py-1 px-2 rounded hover:bg-red-600"
+            onclick="cancelTicket(${index})">Batalkan</button>
+        </td>
+      </tr>
+      `;
+      ticketsTableBody.innerHTML += row;
+    });
+  }
+  ticketsList.classList.remove("hidden");
+});
+
+// Fungsi untuk membatalkan tiket
+function cancelTicket(index) {
+  const tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+  tickets.splice(index, 1); // Hapus tiket berdasarkan index
+  localStorage.setItem("tickets", JSON.stringify(tickets)); // Perbarui localStorage
+  alert("Tiket berhasil dibatalkan!");
+  document.getElementById("viewTicketsButton").click(); // Refresh daftar tiket
+}
+
+
     </script>
   </body>
 </html>
