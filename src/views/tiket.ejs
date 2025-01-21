@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pemesanan Tiket - Dunia Bioskop</title>
+    <!-- Tailwind CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      
+
+      .seat-button {
+        background-color: #4a5568;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .seat-button:hover {
+        background-color: #2d3748;
+      }
+
+      .seat-button.selected {
+        background-color: #38a169;
+      }
+
+      #movieImage {
+        max-width: 200px;
+        height: auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      #movieImage:hover {
+        transform: scale(1.05);
+      }
+
+      input[readonly] {
+        background-color: rgba(75, 85, 99, 0.5) !important;
+        color: #fff !important;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-900 text-white">
+    <nav class="bg-gray-800 p-4 fixed w-full z-10 shadow-lg">
+      <div class="container mx-auto flex justify-between items-center">
+        <!-- Logo -->
+        <a class="flex items-center text-blue-400" href="#">
+          <img
+            src="https://i.pinimg.com/736x/1c/c4/c9/1cc4c9eb92e33ecb9239635bab7a5428.jpg"
+            alt="Logo Bioskop"
+            class="h-10 mr-2"
+          />
+          <span class="text-xl font-bold">Dunia Bioskop</span>
+        </a>
+    
+        <!-- Menu Desktop -->
+        <div class="hidden md:flex space-x-6">
+          <a
+            class="flex items-center hover:text-blue-400 transition duration-300"
+            href="<%= url %>"
+          >
+            <i class="fa fa-home mr-1"></i> Beranda
+          </a>
+          <a
+            class="flex items-center hover:text-blue-400 transition duration-300"
+            href="<%= url %>todos"
+          >
+            <i class="fa fa-film mr-1"></i> Film
+          </a>
+          <a
+            class="flex items-center hover:text-blue-400 transition duration-300"
+            href="<%= url %>profile"
+          >
+            <i class="fa fa-user mr-1"></i> Profil
+          </a>
+        </div>
+    
+        <!-- Hamburger Icon -->
+        <button
+          class="md:hidden flex items-center text-blue-400 focus:outline-none"
+          id="navbar-toggle"
+        >
+          <i class="fa fa-bars"></i>
+        </button>
+      </div>
+    
+      <!-- Menu Mobile -->
+      <div
+        class="hidden flex-col bg-gray-800 md:hidden transition-all duration-300"
+        id="navbar-menu"
+      >
+        <a
+          class="py-2 px-4 flex items-center hover:bg-gray-700 transition"
+          href="<%= url %>"
+        >
+          <i class="fa fa-home mr-2"></i> Beranda
+        </a>
+        <a
+          class="py-2 px-4 flex items-center hover:bg-gray-700 transition"
+          href="<%= url %>todos"
+        >
+          <i class="fa fa-film mr-2"></i> Film
+        </a>
+        <a
+          class="py-2 px-4 flex items-center hover:bg-gray-700 transition"
+          href="<%= url %>profile"
+        >
+          <i class="fa fa-user mr-2"></i> Profil
+        </a>
+      </div>
+    </nav>
+
+
+
+    <div class="container mx-auto mt-20 p-5">
+      <h1 class="text-3xl font-bold mb-5 text-blue-400">
+        Pemesanan Tiket Bioskop
+      </h1>
+
+      <!-- Detail Film -->
+      <div id="movieDetail" class="bg-gray-800 p-5 rounded-lg shadow-lg mb-5">
+        <img
+          id="movieImage"
+          src=""
+          alt="Movie Poster"
+          class="w-48 rounded-lg mx-auto mb-4"
+        />
+        <h2
+          id="movieTitle"
+          class="text-xl font-bold text-center text-blue-400 mb-2"
+        ></h2>
+      </div>
+
+      <!-- Form Pemesanan Tiket -->
+      <form id="ticketForm" class="bg-gray-800 p-5 rounded-lg shadow-lg">
+        <!-- Input dan Pilihan untuk Tiket -->
+        <div class="mb-4">
+          <label for="film" class="block text-sm font-medium"
+            >Film yang Dipilih</label
+          >
+          <input
+            type="text"
+            id="film"
+            readonly
+            class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2 cursor-not-allowed"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="schedule" class="block text-sm font-medium"
+            >Pilih Jadwal</label
+          >
+          <select
+            id="schedule"
+            class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2"
+          >
+            <option value="10:00">10:00 WIB</option>
+            <option value="13:00">13:00 WIB</option>
+            <option value="16:00">16:00 WIB</option>
+            <option value="19:00">19:00 WIB</option>
+            <option value="21:30">21:30 WIB</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium">Pilih Kursi</label>
+          <div class="grid grid-cols-5 gap-2 mt-2">
+            <!-- Baris A -->
+            <button type="button" class="seat-button" onclick="selectSeat(this)">A1</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">A2</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">A3</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">A4</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">A5</button>
+            <!-- Baris B -->
+            <button type="button" class="seat-button" onclick="selectSeat(this)">B1</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">B2</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">B3</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">B4</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">B5</button>
+            <!-- Baris C -->
+            <button type="button" class="seat-button" onclick="selectSeat(this)">C1</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">C2</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">C3</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">C4</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">C5</button>
+            <!-- Baris D -->
+            <button type="button" class="seat-button" onclick="selectSeat(this)">D1</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">D2</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">D3</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">D4</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">D5</button>
+            <!-- Baris E -->
+            <button type="button" class="seat-button" onclick="selectSeat(this)">E1</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">E2</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">E3</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">E4</button>
+            <button type="button" class="seat-button" onclick="selectSeat(this)">E5</button>
+          </div>
+        </div>
+        
+        </div>
+        <div class="mb-4">
+          <label for="payment" class="block text-sm font-medium"
+            >Metode Pembayaran</label
+          >
+          <select
+            id="payment"
+            class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md p-2"
+          >
+            <option value="credit_card">Kartu Kredit</option>
+            <option value="bank_transfer">Transfer Bank</option>
+            <option value="e_wallet">Dompet Digital</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded"
+        >
+          Pesan Tiket
+        </button>
+      </form>
+
+      <!-- Tambahan: Tombol dan Tabel untuk Melihat Tiket -->
+      <div class="mt-5">
+        <button
+          id="viewTicketsButton"
+          class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded"
+        >
+          Lihat Tiket yang Dipesan
+        </button>
+      </div>
+
+      <div
+        id="ticketsList"
+        class="mt-5 hidden bg-gray-800 p-5 rounded-lg shadow-lg"
+      >
+        <h2 class="text-xl font-bold">Tiket yang Anda Pesan:</h2>
+        <table
+          class="w-full text-left text-gray-300 mt-3 border-collapse border border-gray-600"
+        >
+        <thead>
+          <tr>
+            <th class="border border-gray-600 p-2">Kode Tiket</th>
+            <th class="border border-gray-600 p-2">Film</th>
+            <th class="border border-gray-600 p-2">Jadwal</th>
+            <th class="border border-gray-600 p-2">Kursi</th>
+            <th class="border border-gray-600 p-2">Pembayaran</th>
+            <th class="border border-gray-600 p-2">Aksi</th>
+          </tr>
+        </thead>
+        
+          <tbody id="ticketsTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Kode Tiket -->
+      <div
+        id="ticketCode"
+        class="mt-5 hidden bg-gray-800 p-5 rounded-lg shadow-lg"
+      >
+        <h2 class="text-xl font-bold">Kode Tiket Anda:</h2>
+        <p id="code" class="mt-2 text-blue-400"></p>
+      </div>
+    </div>
+
+    <script>
+      const movieData = {
+        "Den of Thieves 2: Pantera": {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173347020029722_290x426.jpg",
+          title: "Den of Thieves 2: Pantera",
+        },
+        "The Prosecutor": {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173338511328812_290x426.jpg",
+          title: "The Prosecutor",
+        },
+        "Sonic the Hedgehog 3": {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173338498787278_290x426.jpg",
+          title: "Sonic the Hedgehog 3",
+        },
+        "Mufasa: The Lion King": {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173330898736407_290x426.jpg",
+          title: "Mufasa: The Lion King",
+        },
+        "Utusan Iblis": {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173371712055774_290x426.jpg",
+          title: "Utusan Iblis",
+        },
+        Wicked: {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173028689721914_290x426.jpg",
+          title: "Wicked",
+        },
+        Ketindihan: {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173433414771272_290x426.jpg",
+          title: "Ketindihan",
+        },
+        Surup: {
+          image:
+            "https://media.21cineplex.com/webcontent/gallery/pictures/173381659593571_290x426.jpg",
+          title: "Surup",
+        },
+        // Tambahkan film lain jika diperlukan
+      };
+
+      window.onload = function () {
+        const selectedMovie = localStorage.getItem("selectedMovie");
+        if (selectedMovie && movieData[selectedMovie]) {
+          document.getElementById("film").value = selectedMovie;
+          document.getElementById("movieImage").src =
+            movieData[selectedMovie].image;
+          document.getElementById("movieTitle").innerText =
+            movieData[selectedMovie].title;
+        }
+      };
+
+      function selectSeat(seat) {
+        seat.classList.toggle("selected");
+      }
+
+      const form = document.getElementById("ticketForm");
+      const ticketCodeDiv = document.getElementById("ticketCode");
+      const codeElement = document.getElementById("code");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const randomCode = "TK-" + Math.floor(Math.random() * 100000);
+        codeElement.innerText = randomCode;
+        ticketCodeDiv.classList.remove("hidden");
+      });
+
+      //
+      // Ganti kode form.addEventListener("submit"...) yang ada dengan ini:
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const film = document.getElementById("film").value;
+  const schedule = document.getElementById("schedule").value;
+  const selectedSeats = Array.from(
+    document.querySelectorAll(".seat-button.selected")
+  ).map((seat) => seat.innerText);
+  const payment = document.getElementById("payment").value;
+
+  if (!film || !schedule || selectedSeats.length === 0 || !payment) {
+    alert("Harap lengkapi semua data sebelum memesan!");
+    return;
+  }
+
+  const randomCode = "TK-" + Math.floor(Math.random() * 100000);
+
+  try {
+    const response = await fetch("/tiket/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ticket_code: randomCode,
+        film: film,
+        schedule: schedule,
+        seats: selectedSeats.join(", "),
+        payment: payment
+      }),
+    });
+
+    if (response.ok) {
+      codeElement.innerText = `Kode Tiket: ${randomCode}`;
+      ticketCodeDiv.classList.remove("hidden");
+      alert("Tiket berhasil disimpan ke database!");
+      
+      // Perbarui daftar tiket
+      document.getElementById("viewTicketsButton").click();
+    } else {
+      alert("Gagal menyimpan tiket ke database");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Terjadi kesalahan saat menyimpan tiket");
+  }
+});
+
+      // Fungsi untuk membatalkan tiket
+      function cancelTicket(index) {
+        const tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+        tickets.splice(index, 1); // Hapus tiket berdasarkan index
+        localStorage.setItem("tickets", JSON.stringify(tickets)); // Perbarui localStorage
+        alert("Tiket berhasil dibatalkan!");
+        document.getElementById("viewTicketsButton").click(); // Refresh daftar tiket
+      }
+
+// Tambahan: Kode untuk menampilkan tiket yang dipesan
+document.getElementById("viewTicketsButton").addEventListener("click", function () {
+  const tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+  const ticketsTableBody = document.getElementById("ticketsTableBody");
+  ticketsTableBody.innerHTML = ""; // Kosongkan tabel sebelum menampilkan
+
+  if (tickets.length === 0) {
+    ticketsTableBody.innerHTML = "<tr><td colspan='6' class='text-center'>Tidak ada tiket yang dipesan.</td></tr>";
+    document.getElementById("ticketsList").classList.remove("hidden");
+    return;
+  }
+
+  tickets.forEach((ticket, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="border border-gray-600 p-2">${ticket.ticket_code}</td>
+      <td class="border border-gray-600 p-2">${ticket.film}</td>
+      <td class="border border-gray-600 p-2">${ticket.schedule}</td>
+      <td class="border border-gray-600 p-2">${ticket.seats}</td>
+      <td class="border border-gray-600 p-2">${ticket.payment}</td>
+      <td class="border border-gray-600 p-2">
+        <button onclick="cancelTicket(${index})" class="text-red-500">Batal</button>
+      </td>
+    `;
+    ticketsTableBody.appendChild(row);
+  });
+
+  document.getElementById("ticketsList").classList.remove("hidden");
+});
+
+    </script>
+  </body>
+</html>
